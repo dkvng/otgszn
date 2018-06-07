@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import "./App.css";
+import LazyLoad from "react-lazyload";
 
 class App extends Component {
   constructor() {
@@ -7,7 +8,7 @@ class App extends Component {
     this.state = {
       content: {},
       modal: false,
-      modalIdx: 99999
+      modalIdx: -99999
     };
   }
 
@@ -28,23 +29,33 @@ class App extends Component {
       modal: !this.state.modal,
       modalIdx: idx
     });
-    console.log(this.state.modalIdx)
-    console.log(idx.target)
+  }
+
+  toggleModalBackground() {
+    this.setState({
+      modal: false,
+      modalIdx: -999999
+    });
   }
 
   allContent() {
     return this.state.content.map((el, idx) => {
       return (
-        <section key={idx} onClick={() => this.toggleModal(idx)}>
-          <img src={el.thumbnailUrl} alt={el.title}  />
-          {this.state.modal && this.state.modalIdx === idx ? (
-            <div className="picture-modal">
-              <img src={el.url} alt={el.title} />
-            </div>
-          ) : (
-            ""
-          )}
-        </section>
+        <LazyLoad key={idx} height={200} offset={100}>
+          <section onClick={() => this.toggleModal(idx)}>
+            <img src={el.thumbnailUrl} alt={el.title} />
+            {this.state.modal && this.state.modalIdx === idx ? (
+              <div
+                className="picture-modal"
+                onClick={() => this.toggleModalBackground()}
+              >
+                <img src={el.url} alt={el.title} />
+              </div>
+            ) : (
+              ""
+            )}
+          </section>
+        </LazyLoad>
       );
     });
   }
